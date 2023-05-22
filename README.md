@@ -8,7 +8,9 @@ Welcome to Flutter Animations Course. Animations are an important part of buildi
 
 ## Course Catalog
 
-| Chapter of Course                                            | Description | Preview | Example Code |
-| ------------------------------------------------------------ | ----------- | ------- | ------------ |
-| [Introduction to Flutter Animations Course](https://youtu.be/b4ii9QoHfY8?list=PL6yRaaP0WPkW3kwAerPeRqGBvJfO8O4S7) |             |         |              |
+| Chapter of Course                                            | Description                                                  | Preview                                                      |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [Introduction to Flutter Animations Course](https://youtu.be/b4ii9QoHfY8?list=PL6yRaaP0WPkW3kwAerPeRqGBvJfO8O4S7) | Introduction to Flutter Animations Course                    |                                                              |
+| [Flutter AnimatedBuilder and Transform - Learn the Basics of Animations in Flutter](https://youtu.be/z6KweorVrNk?list=PL6yRaaP0WPkW3kwAerPeRqGBvJfO8O4S7) | In this video we will check out the basics of animations in Flutter and create a simple animation using AnimatedBuilder, Transform, AnimationController and Tween plus Animation.<br/>source code: [example1_animatedbuilder_and_transform](./example1_animatedbuilder_and_transform) | ![example1](.README.assets/example1_animatedbuilder_and_transform.gif) |
+| [Flutter Chained Animations, Curves and Clippers - Learn About Chained Explicit Animations in Flutter](https://youtu.be/md1vrcHyxig?list=PL6yRaaP0WPkW3kwAerPeRqGBvJfO8O4S7) |                                                              |                                                              |
 
