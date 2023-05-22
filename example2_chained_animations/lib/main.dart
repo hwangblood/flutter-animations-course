@@ -14,6 +14,55 @@ class MyApp extends StatelessWidget {
   }
 }
 
+enum CircleSide {
+  left,
+  right,
+}
+
+extension ToPath on CircleSide {
+  /// parameter size is the size of Container
+  Path toPath(Size size) {
+    final path = Path();
+
+    late Offset offset;
+    late bool clockwise;
+
+    switch (this) {
+      case CircleSide.left:
+        path.moveTo(size.width, 0);
+        offset = Offset(size.width, size.height);
+        clockwise = false;
+        break;
+      case CircleSide.right:
+        // path.moveTo(0, 0);  // this is the default origin point
+        offset = Offset(0, size.height);
+        clockwise = true;
+        break;
+    }
+    path.arcToPoint(
+      offset,
+      radius: Radius.elliptical(size.width / 2, size.height / 2),
+      clockwise: clockwise,
+    );
+
+    path.close();
+    return path;
+  }
+}
+
+class HalfCircleClipper extends CustomClipper<Path> {
+  final CircleSide circleSide;
+
+  HalfCircleClipper(this.circleSide);
+
+  @override
+  Path getClip(Size size) => circleSide.toPath(size);
+
+  // in here, we want to redraw clip path
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
+}
+
 class HomePage extends StatefulWidget {
   const HomePage({
     super.key,
@@ -35,15 +84,21 @@ class _HomePageState extends State<HomePage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 200,
-              height: 200,
-              color: const Color(0xff0057b7),
+            ClipPath(
+              clipper: HalfCircleClipper(CircleSide.left),
+              child: Container(
+                width: 200,
+                height: 200,
+                color: const Color(0xff0057b7),
+              ),
             ),
-            Container(
-              width: 200,
-              height: 200,
-              color: const Color(0xffffd700),
+            ClipPath(
+              clipper: HalfCircleClipper(CircleSide.right),
+              child: Container(
+                width: 200,
+                height: 200,
+                color: const Color(0xffffd700),
+              ),
             ),
           ],
         ),
