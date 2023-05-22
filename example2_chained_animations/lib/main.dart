@@ -66,7 +66,8 @@ class HalfCircleClipper extends CustomClipper<Path> {
 }
 
 extension on VoidCallback {
-  Future<dynamic> delayed(Duration duration) => Future.delayed(duration, this);
+  Future<dynamic> delayed({required Duration duration}) =>
+      Future.delayed(duration, this);
 }
 
 class HomePage extends StatefulWidget {
@@ -78,18 +79,25 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late AnimationController _counterClockwiseRotationController;
   late Animation<double> _counterClockwiseRotationAnimation;
+
+  late AnimationController _flipController;
+  late Animation<double> _flipAnimation;
+
+  final startAnimationDuration = const Duration(seconds: 1);
+  final rotationAnimationDuration = const Duration(seconds: 1);
+  final flipAnimationDuration = const Duration(seconds: 1);
 
   @override
   void initState() {
     super.initState();
 
+    // rotation animation
     _counterClockwiseRotationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
+      duration: rotationAnimationDuration,
     );
     _counterClockwiseRotationAnimation = Tween<double>(
       begin: 0,
@@ -100,11 +108,65 @@ class _HomePageState extends State<HomePage>
         curve: Curves.bounceOut,
       ),
     );
+
+    // flip animation
+    _flipController = AnimationController(
+      vsync: this,
+      duration: flipAnimationDuration,
+    );
+    _flipAnimation = Tween<double>(
+      begin: 0,
+      end: pi,
+    ).animate(
+      CurvedAnimation(
+        parent: _flipController,
+        curve: Curves.bounceOut,
+      ),
+    );
+
+    /* status listeners */
+
+    _counterClockwiseRotationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _flipAnimation = Tween<double>(
+          begin: _flipAnimation.value,
+          end: _flipAnimation.value + pi,
+        ).animate(
+          CurvedAnimation(
+            parent: _flipController,
+            curve: Curves.bounceOut,
+          ),
+        );
+        // reset flip controller and start the animation
+        _flipController
+          ..reset()
+          ..forward();
+      }
+    });
+
+    _flipController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _counterClockwiseRotationAnimation = Tween<double>(
+          begin: _counterClockwiseRotationAnimation.value,
+          end: _counterClockwiseRotationAnimation.value + -(pi / 2),
+        ).animate(
+          CurvedAnimation(
+            parent: _counterClockwiseRotationController,
+            curve: Curves.bounceOut,
+          ),
+        );
+        // reset counter clockwise rotation controller and start the animation
+        _counterClockwiseRotationController
+          ..reset()
+          ..forward();
+      }
+    });
   }
 
   @override
   void dispose() {
     _counterClockwiseRotationController.dispose();
+    _flipController.dispose();
     super.dispose();
   }
 
@@ -113,9 +175,7 @@ class _HomePageState extends State<HomePage>
     _counterClockwiseRotationController
       // reset the counter clockwise rotation controller, to start animation with 0 degree
       ..reset()
-      ..forward.delayed(
-        const Duration(seconds: 1),
-      );
+      ..forward.delayed(duration: startAnimationDuration);
 
     return Scaffold(
       appBar: AppBar(
@@ -135,22 +195,45 @@ class _HomePageState extends State<HomePage>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ClipPath(
-                      clipper: HalfCircleClipper(CircleSide.left),
-                      child: Container(
-                        width: 200,
-                        height: 200,
-                        color: const Color(0xff0057b7),
-                      ),
+                    AnimatedBuilder(
+                      animation: _flipAnimation,
+                      builder: (context, child) {
+                        return Transform(
+                          alignment: Alignment.centerRight,
+                          transform: Matrix4.identity()
+                            ..rotateY(
+                              _flipAnimation.value,
+                            ),
+                          child: ClipPath(
+                            clipper: HalfCircleClipper(CircleSide.left),
+                            child: Container(
+                              width: 200,
+                              height: 200,
+                              color: const Color(0xff0057b7),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                    ClipPath(
-                      clipper: HalfCircleClipper(CircleSide.right),
-                      child: Container(
-                        width: 200,
-                        height: 200,
-                        color: const Color(0xffffd700),
-                      ),
-                    ),
+                    AnimatedBuilder(
+                        animation: _flipAnimation,
+                        builder: (context, child) {
+                          return Transform(
+                            alignment: Alignment.centerLeft,
+                            transform: Matrix4.identity()
+                              ..rotateY(
+                                _flipAnimation.value,
+                              ),
+                            child: ClipPath(
+                              clipper: HalfCircleClipper(CircleSide.right),
+                              child: Container(
+                                width: 200,
+                                height: 200,
+                                color: const Color(0xffffd700),
+                              ),
+                            ),
+                          );
+                        }),
                   ],
                 ),
               );
