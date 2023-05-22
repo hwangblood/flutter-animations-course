@@ -31,8 +31,22 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         title: const Text('Chained Animations'),
       ),
-      body: const Center(
-        child: Text('Hello World!'),
+      body: Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 200,
+              height: 200,
+              color: const Color(0xff0057b7),
+            ),
+            Container(
+              width: 200,
+              height: 200,
+              color: const Color(0xffffd700),
+            ),
+          ],
+        ),
       ),
     );
   }
