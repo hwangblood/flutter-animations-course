@@ -90,7 +90,18 @@ class _HomePageState extends State<HomePage>
     _counterClockwiseRotationAnimation = Tween<double>(
       begin: 0,
       end: -(pi / 2),
-    ).animate(_counterClockwiseRotationController);
+    ).animate(
+      CurvedAnimation(
+        parent: _counterClockwiseRotationController,
+        curve: Curves.bounceOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _counterClockwiseRotationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -101,27 +112,38 @@ class _HomePageState extends State<HomePage>
         title: const Text('Chained Animations'),
       ),
       body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ClipPath(
-              clipper: HalfCircleClipper(CircleSide.left),
-              child: Container(
-                width: 200,
-                height: 200,
-                color: const Color(0xff0057b7),
-              ),
-            ),
-            ClipPath(
-              clipper: HalfCircleClipper(CircleSide.right),
-              child: Container(
-                width: 200,
-                height: 200,
-                color: const Color(0xffffd700),
-              ),
-            ),
-          ],
-        ),
+        child: AnimatedBuilder(
+            animation: _counterClockwiseRotationController,
+            builder: (context, child) {
+              return Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.identity()
+                  ..rotateZ(
+                    _counterClockwiseRotationAnimation.value,
+                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ClipPath(
+                      clipper: HalfCircleClipper(CircleSide.left),
+                      child: Container(
+                        width: 200,
+                        height: 200,
+                        color: const Color(0xff0057b7),
+                      ),
+                    ),
+                    ClipPath(
+                      clipper: HalfCircleClipper(CircleSide.right),
+                      child: Container(
+                        width: 200,
+                        height: 200,
+                        color: const Color(0xffffd700),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
       ),
     );
   }
