@@ -65,6 +65,10 @@ class HalfCircleClipper extends CustomClipper<Path> {
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
 }
 
+extension on VoidCallback {
+  Future<dynamic> delayed(Duration duration) => Future.delayed(duration, this);
+}
+
 class HomePage extends StatefulWidget {
   const HomePage({
     super.key,
@@ -106,6 +110,13 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    _counterClockwiseRotationController
+      // reset the counter clockwise rotation controller, to start animation with 0 degree
+      ..reset()
+      ..forward.delayed(
+        const Duration(seconds: 1),
+      );
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
