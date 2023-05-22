@@ -1,3 +1,5 @@
+import 'dart:math' show pi;
+
 import 'package:flutter/material.dart';
 
 void main() => runApp(const MyApp());
@@ -72,7 +74,25 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _counterClockwiseRotationController;
+  late Animation<double> _counterClockwiseRotationAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _counterClockwiseRotationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+    _counterClockwiseRotationAnimation = Tween<double>(
+      begin: 0,
+      end: -(pi / 2),
+    ).animate(_counterClockwiseRotationController);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
